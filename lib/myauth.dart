@@ -38,6 +38,22 @@ class _State extends State<myApp>{
       });
     }
   }
+  void signinWithGoogle()async{
+    final GoogleSignInAccount account=await googleSignIn.signIn();
+    final GoogleSignInAuthentication authentication=await account.authentication;
+    final GoogleAuthCredential credential=GoogleAuthProvider.credential(idToken: authentication.idToken,accessToken: authentication.accessToken);
+    final UserCredential authResult=await auth.signInWithCredential(credential);
+    final User user=authResult.user;
+    if(user!=null&&user.isAnonymous==false){
+      setState(() {
+        status='Signed In With Google';
+      });
+    }else{
+      setState(() {
+        status='Google signin failed';
+      });
+    }
+  }
   void signout()async{
     await auth.signOut();
     setState(() {
@@ -55,14 +71,9 @@ class _State extends State<myApp>{
         child: new Column(
           children: <Widget>[
             new Text(status),
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                RaisedButton(onPressed: signout,child: Text('Sign out'),),
-                RaisedButton(onPressed: signinAnon,child: Text('Sign in Anon'),),
-              ],
-            ),
+            RaisedButton(onPressed: signout,child: Text('Sign out'),),
+            RaisedButton(onPressed: signinAnon,child: Text('Sign in Anon'),),
+            RaisedButton(onPressed: signinWithGoogle,child: Text('Sign In With google'),),
           ],
         ),
       ),

@@ -45,6 +45,22 @@ if(user!=null&&user.isAnonymous==true){
     });
 
   }
+  void signinGoogle()async{
+  final GoogleSignInAccount account=await googleSignIn.signIn();
+  final GoogleSignInAuthentication authentication=await account.authentication;
+  final GoogleAuthCredential credential=GoogleAuthProvider.credential(idToken: authentication.idToken,accessToken: authentication.accessToken);
+  final UserCredential authresult=await auth.signInWithCredential(credential);
+  final User user=authresult.user;
+  if(user!=null&&user.isAnonymous==false){
+    setState(() {
+      status='Signed In With Google successffully';
+    });
+  }else{
+    setState(() {
+      status='Google sign in failed';
+    });
+  }
+  }
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -56,14 +72,9 @@ if(user!=null&&user.isAnonymous==true){
         child: new Column(
           children: <Widget>[
             new Text(status),
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                RaisedButton(onPressed: signOut,child: Text('Sign Out'),),
-                RaisedButton(onPressed: signInAnon,child: Text('Sign In Anon'),),
-              ],
-            ),
+            RaisedButton(onPressed: signOut,child: Text('Sign Out'),),
+            RaisedButton(onPressed: signInAnon,child: Text('Sign In Anon'),),
+            RaisedButton(onPressed: signinGoogle,child: Text('Sign In With Google'),),
           ],
         ),
       ),
